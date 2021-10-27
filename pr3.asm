@@ -85,7 +85,12 @@ main proc
 		Graficar:
 			print entro
 			print salto
+			
+			ModoVideo
+			pintarMargen 7
+			
 			getChar
+			ModoTexto
 			jmp Menu
 			
 		ResolverEcuaciones:
