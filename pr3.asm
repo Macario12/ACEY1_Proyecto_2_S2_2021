@@ -101,7 +101,7 @@ main proc
 		Graficar:			
 			ModoVideo
 			pintarMargen 7
-			
+			graficarFuncion -1,4
 			getChar
 			ModoTexto
 			jmp Menu

@@ -241,3 +241,650 @@ ejey:
 	cmp di,57760
 	jne ejey
 endm
+
+graficarFuncion macro valorVariable,valor
+LOCAL Lpositiva,Lnegativa,salir,validar
+validar:
+xor bl,bl
+mov bl, valorVariable
+cmp bl, 1
+je  Lpositiva
+
+cmp bl, -1
+je  Lnegativa
+
+
+Lpositiva:
+	constantePositiva valor
+	jmp salir
+	
+Lnegativa:
+	constanteNegativa valor
+	jmp salir
+salir:
+	
+endm
+
+constantePositiva macro valor
+LOCAL ejex,ciclo
+mov dl,2
+mov ax,0
+mov si,0
+ciclo:
+	inc si
+	add ax,320
+	cmp si,valor
+	jne ciclo
+	
+mov di,32010
+sub di,ax
+xor bx,bx
+mov bx,32309
+sub bx,ax
+ejex:
+	mov [di],dl
+	inc di
+	
+	cmp di,bx
+	jne ejex
+endm
+
+constanteNegativa macro valor
+LOCAL ejex,ciclo
+mov dl,2
+mov ax,0
+mov si,0
+ciclo:
+	inc si
+	add ax,320
+	cmp si,valor
+	jne ciclo
+	
+mov di,32010
+add di,ax
+xor bx,bx
+mov bx,32309
+add bx,ax
+ejex:
+	mov [di],dl
+	inc di
+	
+	cmp di,bx
+	jne ejex
+endm
+
+linealPosiiva macro valor
+LOCAL graph1,graph3
+mov dl, 2
+mov di,32160
+add di,valor
+
+graph1:
+	mov[di],dl
+	sub di,320
+	
+	inc di
+	
+	xor ax,ax
+	mov ax,6640
+	add ax,valor
+	
+	cmp di,ax
+	jne graph1
+
+mov di,32160
+add di,valor
+graph3:
+	mov[di],dl
+	add di,320
+	
+	dec di
+	xor ax,ax
+	mov ax,57680
+	
+	add ax,valor
+	
+	cmp di,ax
+	jne graph3
+endm
+
+linealNegativa macro valor
+LOCAL graph1,graph3
+mov dl, 2
+mov di,32160
+add di,valor
+
+graph1:
+	mov[di],dl
+	sub di,320
+	
+	dec di
+	
+	xor ax,ax
+	mov ax,6480
+	add ax,valor
+	
+	cmp di,ax
+	jne graph1
+
+mov di,32160
+add di,valor
+graph3:
+	mov[di],dl
+	add di,320
+	
+	inc di
+	xor ax,ax
+	mov ax,57840
+	
+	add ax,valor
+	
+	cmp di,ax
+	jne graph3
+endm
+
+cuadraticaPositiva macro valor
+LOCAL graph1,graph3,ciclo,ciclo2
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+
+
+
+graph1:
+	mov si,0
+	ciclo:
+		inc si
+		mov[di],dl
+		sub di,320
+		cmp si,9
+		jne ciclo
+
+	inc di
+	add di,320
+	xor bx,bx
+	mov bx,12650
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph1
+	
+
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+
+graph3:
+	mov si,0
+	ciclo2:
+		inc si
+		mov[di],dl
+		sub di,320
+		cmp si,9
+		jne ciclo2
+
+	dec di
+	add di,320
+	xor bx,bx
+	mov bx,12630
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph3
+
+endm
+
+cuadraticaNegativa macro valor
+LOCAL graph1,graph3,ciclo,ciclo2
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+
+
+
+graph1:
+	mov si,0
+	ciclo:
+		inc si
+		mov[di],dl
+		add di,320
+		cmp si,9
+		jne ciclo
+
+	inc di
+	sub di,320
+	xor bx,bx
+	mov bx,56812
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph1
+	
+
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+
+graph3:
+	mov si,0
+	ciclo2:
+		inc si
+		mov[di],dl
+		add di,320
+		cmp si,9
+		jne ciclo2
+
+	dec di
+	sub di,320
+	xor bx,bx
+	mov bx,56788
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph3
+
+endm
+
+
+
+cubicaPositiva macro valor
+LOCAL graph1,graph3,ciclo,ciclo2
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+
+graph1:
+	mov si,0
+	ciclo:
+		inc si
+		mov[di],dl
+		sub di,320
+		cmp si,9
+		jne ciclo
+
+	inc di
+	add di,320
+	xor bx,bx
+	mov bx,10091
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph1
+	
+
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+
+graph3:
+	mov si,0
+	ciclo2:
+		inc si
+		mov[di],dl
+		add di,320
+		cmp si,9
+		jne ciclo2
+
+	dec di
+	sub di,320
+	xor bx,bx
+	mov bx,56788
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph3
+
+endm
+
+cubicaNegativa macro valor
+LOCAL graph1,graph3,ciclo,ciclo2
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+
+
+
+graph1:
+	mov si,0
+	ciclo:
+		inc si
+		mov[di],dl
+		add di,320
+		cmp si,9
+		jne ciclo
+
+	inc di
+	sub di,320
+	xor bx,bx
+	mov bx,56812
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph1
+
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+
+graph3:
+	mov si,0
+	ciclo2:
+		inc si
+		mov[di],dl
+		sub di,320
+		cmp si,9
+		jne ciclo2
+
+	dec di
+	add di,320
+	xor bx,bx
+	mov bx,10069
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph3
+endm
+
+
+alacuartaPositiva macro valor
+LOCAL graph1,graph3,ciclo,ciclo2
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+add di,1
+mov[di],dl
+add di,1
+mov[di],dl
+add di,1
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+add di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+
+
+
+graph1:
+	mov si,0
+	ciclo:
+		inc si
+		mov[di],dl
+		sub di,320
+		cmp si,9
+		jne ciclo
+
+	inc di
+	add di,320
+	xor bx,bx
+	mov bx,10094
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph1
+	
+
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+sub di,1
+mov[di],dl
+sub di,1
+mov[di],dl
+sub di,1
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+sub di,1
+sub di,320
+mov[di],dl
+sub di,320
+mov[di],dl
+
+graph3:
+	mov si,0
+	ciclo2:
+		inc si
+		mov[di],dl
+		sub di,320
+		cmp si,9
+		jne ciclo2
+
+	dec di
+	add di,320
+	xor bx,bx
+	mov bx,10066
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph3
+
+endm
+
+alacuartaNegativa macro valor
+LOCAL graph1,graph3,ciclo,ciclo2
+mov dl, 2 ;color de la graficca
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+add di,1
+mov[di],dl
+add di,1
+mov[di],dl
+add di,1
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+add di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+
+
+
+graph1:
+	mov si,0
+	ciclo:
+		inc si
+		mov[di],dl
+		add di,320
+		cmp si,9
+		jne ciclo
+
+	inc di
+	sub di,320
+	xor bx,bx
+	mov bx,56815
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph1
+	
+
+mov di,32160 ; posicion inicial centro 
+add di,valor
+mov[di],dl
+sub di,1
+mov[di],dl
+sub di,1
+mov[di],dl
+sub di,1
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+sub di,1
+add di,320
+mov[di],dl
+add di,320
+mov[di],dl
+
+graph3:
+	mov si,0
+	ciclo2:
+		inc si
+		mov[di],dl
+		add di,320
+		cmp si,9
+		jne ciclo2
+
+	dec di
+	sub di,320
+	xor bx,bx
+	mov bx,56785
+	add bx,valor
+	
+	cmp di,bx
+	
+	jne graph3
+
+endm
