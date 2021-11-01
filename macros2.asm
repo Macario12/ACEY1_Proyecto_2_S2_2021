@@ -48,7 +48,7 @@ LOCAL Mientras, Fin, AsignarFin
 			jmp Mientras
 			
 		Fin:
-		dec di
+		;dec di
 		IntToString di, ultimoID
 endm
 
@@ -92,11 +92,12 @@ seleccionarFuncion macro msg, numero
 	print funcion
 endm
 
-guardarFuncionUnica macro
+guardarFuncionUnica macro func
 LOCAL Mientras, Fin, AsignarFin
-	print msgFuncion
-	obtenerTexto funcionUnica
-	print funcionUnica
+
+	;print msgFuncion
+	;obtenerTexto func
+	;print func
 	xor al, al
 	xor ax, ax
 	xor di, di
@@ -115,7 +116,7 @@ LOCAL Mientras, Fin, AsignarFin
 	mov si, bx	
 	xor di, di
 	Mientras:
-		mov al, funcionUnica[di]
+		mov al, func[di]
 		mov bufferInformacion[si], al
 		cmp al, 59						; si es igual a puntoComa	
 		je AsignarFin
@@ -137,13 +138,14 @@ LOCAL Mientras, Fin, AsignarFin
 	Fin:
 	
 	limpiar ultimoID, SIZEOF ultimoID,24h ; 24h = $
-	limpiar funcionUnica, SIZEOF funcionUnica,24h ; 24h = $
+	limpiar func, SIZEOF func,24h ; 24h = $
 	IntToString di, ultimoID
 	print bufferInformacion
 	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;xor si, si
 	;xor bx, bx
-	;mov bl, inicioFunciones[5]
+	;mov bl, inicioFunciones[0]
 	;mov si, bx
 	;IntToString si, lastPosition
 	;print lineas
@@ -151,13 +153,316 @@ LOCAL Mientras, Fin, AsignarFin
 	;print lastPosition
 	;xor si, si
 	;xor bx, bx
-	;mov bl, finFunciones[5]
+	;mov bl, finFunciones[0]
 	;mov si, bx
 	;IntToString si, lastPosition
 	;print salto
 	;print lastPosition
 	;print lineas
+	
+endm
 
+analizarFuncion macro func
+LOCAL MientrasTransIEE, FinIEE, sinExp, saltoLinea, negativo, finNeg, sigDolarLetra,IntegrarEnteroLetraExponente, IntegrarEntero, IntegrarEnteroLetra, MientrasNum, MientrasExp, MientrasLetra, sigElevado, sigDolarExp, sigSumaExp, sigRestaExp, sigDolarEnt, sigSumaEnt, sigRestaEnt, numCero, numUno, numDos, numTres, numCuatro, numCinco, numSeis, numSiete, numOcho, numNueve, Fin
+push ax
+push cx
+push si
+push di
+push bx
+
+	reiniciar
+	xor di, di
+	mov ultimoVal[0], 48
+	
+	mov al, func[di]
+	
+	saltoLinea:
+		cmp al, 10
+		jne negativo
+		inc di
+		mov al, func[di]
+		jmp negativo
+		
+	negativo:
+		cmp al, 45
+		jne finNeg
+		inc di
+		mov ultimoVal[0], 49
+		mov funcionIntegrada[0], 45
+	
+	finNeg:
+	xor si, si
+	xor bx, bx
+	xor bl, bl
+	xor al, al
+	xor cx, cx
+	MientrasNum:
+	
+		mov al, func[di]
+		
+		cmp al, 10
+		jne numCero
+		inc di
+		mov al, func[di]
+		
+		numCero:
+			cmp al, 48
+			jne numUno
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numUno:
+			cmp al, 49
+			jne numDos
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numDos:	
+			cmp al, 50
+			jne numTres
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numTres:
+			cmp al, 51
+			jne numCuatro
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numCuatro:
+			cmp al, 52
+			jne numCinco
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numCinco:
+			cmp al, 53
+			jne numSeis
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numSeis:
+			cmp al, 54 
+			jne numSiete
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numSiete:
+			cmp al, 55
+			jne numOcho
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numOcho:
+			cmp al, 56
+			jne numNueve
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numNueve:
+			cmp al, 57
+			jne sigSumaEnt
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		sigSumaEnt:
+			cmp al, 43
+			jne sigRestaEnt
+			jmp IntegrarEntero
+			
+		sigRestaEnt:
+			cmp al, 45
+			jne sigDolarEnt
+			jmp IntegrarEntero
+			
+		sigDolarEnt:
+			cmp al, 36
+			jne MientrasLetra
+			jmp IntegrarEntero
+	
+	MientrasLetra:
+		xor si, si
+		xor al,al 
+		mov al, func[di]
+		mov letraInte[si], al
+		inc di 
+		mov al, func[di]
+		
+		sigElevado:
+			cmp al, 94
+			jne sigDolarLetra
+			inc di
+			jmp MientrasExp
+			
+		sigDolarLetra:
+			cmp al, 36
+			jne IntegrarEnteroLetra
+			inc di
+			jmp IntegrarEnteroLetra
+			
+	MientrasExp:
+		xor al, al
+		xor si, si
+		mov al, func[di]
+		
+		sigSumaExp:
+			cmp al, 43
+			je IntegrarEnteroLetraExponente
+			jmp sigRestaExp
+			
+		sigRestaExp:
+			cmp al, 45
+			je IntegrarEnteroLetraExponente
+			jmp sigDolarExp
+			
+		sigDolarExp:
+			cmp al, 36
+			je IntegrarEnteroLetraExponente
+		
+		add al, 1
+		mov exponenteEnteroArr[si], al
+		;mov 
+	
+		inc di
+		inc si
+		jmp MientrasExp
+		
+	IntegrarEntero: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		mov exponenteEnteroArr[0], 49
+		jmp IntegrarEnteroLetraExponente
+	
+	IntegrarEnteroLetra: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		mov exponenteEnteroArr[0], 50
+	
+	IntegrarEnteroLetraExponente: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		xor bx, bx
+		xor ax, ax
+		StringToInt exponenteEnteroArr
+		mov bx, ax
+		mov exponenteEntero, bl
+	
+		xor ax, ax
+		StringToInt numeroEnteroArr
+		
+		div exponenteEntero
+		
+		limpiar numeroEnteroArr, SIZEOF numeroEnteroArr,24h ; 24h = $
+		xor si, si
+		xor bx, bx
+		mov bl, al
+		mov si, bx
+		IntToString si, numeroEnteroArr
+		
+		xor si, si
+		xor ax, ax
+		xor bx, bx
+		StringToInt ultimoVal
+		mov bx, ax
+		mov si, bx
+		
+		xor bx, bx
+		xor al, al
+		MientrasTransIEE:
+			mov al, numeroEnteroArr[bx]
+			cmp al, 36
+			je FinIEE
+			mov funcionIntegrada[si], al
+			inc si
+			inc bx
+			jmp MientrasTransIEE
+		
+		FinIEE:
+			mov al, 120
+			mov funcionIntegrada[si], al
+			inc si
+			
+			mov al, exponenteEnteroArr[0]
+			cmp al, 49
+			je sinExp
+			
+			mov al, 94
+			mov funcionIntegrada[si], al
+			mov al, exponenteEnteroArr[0]
+			inc si
+			mov funcionIntegrada[si], al
+			inc si
+			sinExp:
+			
+		mov al, func[di]
+		cmp al, 36
+		je Fin
+		mov funcionIntegrada[si], al
+		inc si
+		inc di
+		IntToString si, ultimoVal
+		reiniciar
+		xor si, si
+		xor al, al
+		jmp MientrasNum
+				
+	Fin:	
+	mov al, 43
+	mov funcionIntegrada[si], al
+	inc si
+	mov al, 99
+	mov funcionIntegrada[si], al
+	inc si
+	mov al, 59
+	mov funcionIntegrada[si], al
+	
+	print salto 
+	print lineas
+	print resultado
+	print funcionIntegrada
+	print lineas
+	print salto
+	guardarFuncionUnica funcionIntegrada
+	limpiar funcionIntegrada, SIZEOF funcionIntegrada,24h ; 24h = $	
+pop bx
+pop di
+pop si
+pop cx
+pop ax
+endm 
+
+reiniciar macro 
+push si
+push cx
+	limpiar numeroEnteroArr, SIZEOF numeroEnteroArr,24h ; 24h = $
+	limpiar exponenteEnteroArr, SIZEOF exponenteEnteroArr,24h ; 24h = $
+	limpiar letraInte, SIZEOF letraInte,24h ; 24h = $
+pop cx
+pop si
 endm
 
 ;=================================================================================================================

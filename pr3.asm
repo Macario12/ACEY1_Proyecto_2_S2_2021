@@ -29,6 +29,16 @@ bufferentrada db 50 dup('$')
 handlerentrada dw ?
 bufferInformacion db 500 dup('$')
 
+;Partes de uan funcion 
+numeroEnteroArr db 10 dup('$')
+exponenteEnteroArr db 10 dup('$')
+letraInte db 3 dup('$')
+numeroEntero dw 0
+exponenteEntero db 0
+resultado db 0ah, 0dh, 'Resultado: ', '$'
+funcionIntegrada db 50 dup('$')
+ultimoVal db 3 dup('$')
+
 .code
 main proc
 		Menu:
@@ -61,6 +71,7 @@ main proc
 			
 		IntegrarFuncion:
 			seleccionarFuncion msgIntegral, numeroID
+			analizarFuncion funcion
 			getChar
 			jmp Menu
 			
@@ -76,7 +87,9 @@ main proc
 			je RegresarMenu
 			
 			IngresarFuncion:	
-				guardarFuncionUnica
+				print msgFuncion
+				obtenerTexto funcionUnica
+				guardarFuncionUnica funcionUnica
 				
 				getChar
 				jmp Menu
