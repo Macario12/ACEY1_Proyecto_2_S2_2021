@@ -15,6 +15,7 @@ msgRuta db 0ah,0dh, 'Ingrese la ruta del archivo: $' , '$'
 msgFuncion db 0ah,0dh, 'Ingrese una funcion: $', '$'
 msgIntegral db 0ah,0dh, 'Ingrese el ID de la funcion a integrar: $' , '$'
 msgDerivada db 0ah,0dh, 'Ingrese el ID de la funcion a derivar: $' , '$'
+msgGraficar db 0ah,0dh, 'Ingrese el ID de la funcion a graficar: $' , '$'
 msgCargo db 0ah,0dh, 'Se cargo el documento txt!' , '$'
 lineas db 0ah,0dh, '--------------------------------------------------' , '$'
 
@@ -28,11 +29,21 @@ funcionUnica db 50 dup('$')
 bufferentrada db 50 dup('$')
 handlerentrada dw ?
 bufferInformacion db 500 dup('$')
+bufferAux db 500 dup('$')
 
 ;Partes de uan funcion 
 numeroEnteroArr db 10 dup('$')
 exponenteEnteroArr db 10 dup('$')
 letraInte db 3 dup('$')
+;Graficar
+constanteGraficar db 10 dup('$')
+coeficienteGraficar db 10 dup('$')
+exponenteGraficar db 10 dup('$')
+debugaux db 10 dup('$')
+constanteNum dw 0
+exponenteNum dw 0
+coeficienteNum dw 0 
+
 numeroEntero dw 0
 exponenteEntero db 0
 resultado db 0ah, 0dh, 'Resultado: ', '$'
@@ -90,7 +101,7 @@ main proc
 				print msgFuncion
 				obtenerTexto funcionUnica
 				guardarFuncionUnica funcionUnica
-				
+				print bufferInformacion
 				getChar
 				jmp Menu
 			
@@ -108,15 +119,18 @@ main proc
 		ImprimirFunciones:
 			print entro
 			print salto
+			printFunc
+			print salto
 			getChar
 			jmp Menu
 			
 		Graficar:			
-			ModoVideo
-			pintarMargen 7
-			graficarFuncion -1,4
+			
+			seleccionarFuncion msgGraficar, numeroID
+			analizarFuncionGraficar funcion
 			getChar
 			ModoTexto
+	
 			jmp Menu
 			
 		ResolverEcuaciones:

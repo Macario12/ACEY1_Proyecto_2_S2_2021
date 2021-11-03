@@ -140,7 +140,7 @@ LOCAL Mientras, Fin, AsignarFin
 	limpiar ultimoID, SIZEOF ultimoID,24h ; 24h = $
 	limpiar func, SIZEOF func,24h ; 24h = $
 	IntToString di, ultimoID
-	print bufferInformacion
+	
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;xor si, si
@@ -468,6 +468,34 @@ endm
 ;=================================================================================================================
 
 ;[MACARIO-201905837]
+printFunc macro
+LOCAL mientras,fin, noprintBuffer,nosalto
+xor si,si
+xor di,di
+	mientras:
+		mov al, bufferInformacion[si]
+		cmp al, 10
+		je nosalto
+		mov bufferAux[di], al
+		inc di
+		nosalto:
+		cmp al,59
+		jne noprintBuffer
+	
+		print bufferAux
+		print salto
+		limpiar bufferAux, SIZEOF bufferAux, 024h
+		xor di,di
+	noprintBuffer:
+		cmp al,36
+		je fin
+		inc si
+		jmp mientras
+	
+	fin:
+endm
+
+
 ModoVideo macro ; Modo video para graficar
 	mov ah, 00h
 	mov al, 13h
@@ -547,27 +575,451 @@ ejey:
 	jne ejey
 endm
 
-graficarFuncion macro valorVariable,valor
-LOCAL Lpositiva,Lnegativa,salir,validar
-validar:
-xor bl,bl
-mov bl, valorVariable
-cmp bl, 1
-je  Lpositiva
 
-cmp bl, -1
-je  Lnegativa
-
-
-Lpositiva:
-	constantePositiva valor
-	jmp salir
+analizarFuncionGraficar macro func
+LOCAL L1,L2,escero,espositivo,MientrasTransIEE, FinIEE, sinExp, saltoLinea, negativo, finNeg, sigDolarLetra, MientrasNum, MientrasExp, MientrasLetra, sigElevado, sigDolarExp, sigSumaExp, sigRestaExp, sigDolarEnt, sigSumaEnt, sigRestaEnt, numCero, numUno, numDos, numTres, numCuatro, numCinco, numSeis, numSiete, numOcho, numNueve, Fin,moverCoeficienteLetra,moverCoeficienteLetraExponete,moverConstante,finmientrasConstante,finmientrasCoefiente,mientrasCoeficiente,noMover,notaddUno
+push ax
+push cx
+push si
+push di
+push bx
+mov exponenteGraficar[0],48
+	reiniciar
+	xor di, di
+	mov ultimoVal[0], 48
 	
-Lnegativa:
-	constanteNegativa valor
-	jmp salir
+	mov al, func[di]
+	
+	saltoLinea:
+		cmp al, 10
+		jne negativo
+		inc di
+		mov al, func[di]
+		jmp negativo
+		
+	negativo:
+		cmp al, 45
+		jne finNeg
+		inc di
+		mov ultimoVal[0], 49
+		mov funcionIntegrada[0], 45
+	
+	finNeg:
+	xor si, si
+	xor bx, bx
+	xor bl, bl
+	xor al, al
+	xor cx, cx
+	MientrasNum:
+		
+		cmp di,48
+		je escero
+		dec di
+		mov al,func[di]
+		cmp al,45
+		jne espositivo
+		mov numeroEnteroArr[si],45
+		inc si
+		espositivo:
+			inc di
+		escero:
+		
+		mov al, func[di]
+		
+		cmp al, 10
+		jne numCero
+		inc di
+		mov al, func[di]
+		
+		numCero:
+			cmp al, 48
+			jne numUno
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numUno:
+			cmp al, 49
+			jne numDos
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numDos:	
+			cmp al, 50
+			jne numTres
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numTres:
+			cmp al, 51
+			jne numCuatro
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numCuatro:
+			cmp al, 52
+			jne numCinco
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numCinco:
+			cmp al, 53
+			jne numSeis
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numSeis:
+			cmp al, 54 
+			jne numSiete
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numSiete:
+			cmp al, 55
+			jne numOcho
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+		
+		numOcho:
+			cmp al, 56
+			jne numNueve
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		numNueve:
+			cmp al, 57
+			jne sigSumaEnt
+			mov numeroEnteroArr[si], al
+			inc si
+			inc di
+			
+			jmp MientrasNum
+			
+		sigSumaEnt:
+			cmp al, 43
+			jne sigRestaEnt
+			jmp moverConstante
+			
+		sigRestaEnt:
+			cmp al, 45
+			jne sigDolarEnt
+			jmp moverConstante
+			
+		sigDolarEnt:
+			cmp al, 36
+			jne MientrasLetra
+			jmp moverConstante
+		
+	MientrasLetra:
+		mov al,numeroEnteroArr[0]
+		cmp al,45
+		jne L1
+			mov al,numeroEnteroArr[1]
+			cmp al,36
+			jne notaddUno
+			
+			mov numeroEnteroArr[1],49
+			jmp notaddUno
+		L1:
+		xor al,al							
+		mov al, numeroEnteroArr[0]
+		cmp al,36
+		jne notaddUno
+		mov numeroEnteroArr[0],49
+		notaddUno:	
+		xor si, si
+		xor al,al 
+		mov al, func[di]
+		mov letraInte[si], al
+		inc di 
+		mov al, func[di]
+		
+		sigElevado:
+			cmp al, 94
+			jne sigDolarLetra
+			inc di
+			jmp MientrasExp
+			
+		sigDolarLetra:
+			cmp al, 36
+			jne moverCoeficienteLetra
+			inc di
+			jmp moverCoeficienteLetra
+			
+	MientrasExp:
+		xor al, al
+		xor si, si
+		mov al, func[di]
+		
+		sigSumaExp:
+			cmp al, 43
+			je moverCoeficienteLetraExponete
+			jmp sigRestaExp
+			
+		sigRestaExp:
+			cmp al, 45
+			je moverCoeficienteLetraExponete
+			jmp sigDolarExp
+			
+		sigDolarExp:
+			cmp al, 36
+			je moverCoeficienteLetraExponete
+		
+		mov exponenteEnteroArr[si], al
+	
+		inc di
+		inc si
+		jmp MientrasExp
+	
+	
+	moverConstante: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		xor si,si
+		mientrasConstante:
+			mov al,numeroEnteroArr[si]
+			cmp al,36
+			je	finmientrasConstante 
+			mov constanteGraficar[si],al
+			inc si
+			jmp mientrasConstante
+		finmientrasConstante:
+		reiniciar
+		mov al,func[di]
+		cmp al,36
+		je Fin
+		inc di
+		xor si,si
+		jmp MientrasNum
+	moverCoeficienteLetra: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		mov exponenteEnteroArr[0],49
+		jmp moverCoeficienteLetraExponete
+		
+		
+	moverCoeficienteLetraExponete: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		mov al, exponenteEnteroArr[0]
+		cmp al,exponenteGraficar[0]
+		jb noMover
+		limpiar exponenteGraficar, SIZEOF exponenteGraficar,36
+		mov exponenteGraficar[0],al
+		
+		xor si,si
+		limpiar coeficienteGraficar,SIZEOF coeficienteGraficar,36
+		mientrasCoeficiente:
+			mov al,numeroEnteroArr[si]
+			cmp al,36
+			je finmientrasCoefiente
+			
+			mov coeficienteGraficar[si],al
+			inc si
+			jmp mientrasCoeficiente
+			
+		finmientrasCoefiente:
+		noMover:
+		reiniciar 
+		mov al,func[di]
+		cmp al,36
+		je Fin
+		inc di
+		xor si,si
+		jmp MientrasNum
+	Fin:
+	
+	StringToInt coeficienteGraficar
+	xor bx,bx
+	mov bx,ax
+	mov coeficienteNum, bx
+
+	
+	StringToInt exponenteGraficar
+	xor bx,bx
+	mov bx,ax
+	mov exponenteNum, bx
+	
+	StringToInt constanteGraficar
+	xor bx,bx
+	mov bx,ax
+	mov constanteNum, bx
+	
+	graficarFuncion exponenteNum,coeficienteGraficar,constanteNum,func
+			
+	
+pop bx
+pop di
+pop si
+pop cx
+pop ax
+endm
+
+graficarFuncion macro exponente,valorVariable,valor,funcion
+LOCAL Lpositiva,Lnegativa,salir,validar,Constante,Lineal,Cuadratica,Cubica,AlaCuarta,Lpositiva1,Lnegativa1,Lpositiva2,Lnegativa2,Lpositiva3,Lnegativa3,Lpositiva4,Lnegativa4
+push ax
+push di
+xor ax,ax
+mov ax,exponente
+
+cmp ax,0
+je Constante
+cmp ax,1
+je Lineal
+cmp ax,2
+je Cuadratica
+cmp ax,3
+je Cubica
+cmp ax,4
+je AlaCuarta
+jmp salir
+
+Constante:
+	xor bl,bl
+	mov bl, valorVariable[0]
+	cmp bl, 45
+	je  Lnegativa ;cambios recientes por si da error 
+	jmp Lpositiva
+
+	Lpositiva:
+		ModoVideo
+		pintarMargen 7
+		
+		constantePositiva valor
+		jmp salir
+	Lnegativa:
+		ModoVideo
+		pintarMargen 7
+		constanteNegativa valor
+		jmp salir
+Lineal:
+	xor bl,bl
+	mov bl, valorVariable[0]
+	cmp bl, 45
+	je  Lnegativa1 ;cambios recientes por si da error 
+	jmp Lpositiva1
+
+	Lpositiva1:
+		ModoVideo
+		pintarMargen 7
+		linealPosiiva valor
+		jmp salir
+	Lnegativa1:
+		ModoVideo
+		pintarMargen 7
+		linealNegativa valor
+		jmp salir
+
+Cuadratica:
+	xor bl,bl
+	mov bl, valorVariable[0]
+	cmp bl, 45
+	je  Lnegativa2 ;cambios recientes por si da error 
+	jmp Lpositiva2
+
+	Lpositiva2:
+		ModoVideo
+		pintarMargen 7
+		
+		cuadraticaPositiva valor
+		jmp salir
+	Lnegativa2:
+		ModoVideo
+		pintarMargen 7
+		
+		cuadraticaNegativa valor
+		jmp salir
+
+Cubica:
+	xor bl,bl
+	mov bl, valorVariable[0]
+	cmp bl, 45
+	je  Lnegativa3 ;cambios recientes por si da error 
+	jmp Lpositiva3
+
+	Lpositiva3:
+		ModoVideo
+		pintarMargen 7
+		
+		cubicaPositiva valor
+		jmp salir
+	Lnegativa3:
+		ModoVideo
+		pintarMargen 7
+		
+		cubicaNegativa valor
+		jmp salir
+
+AlaCuarta :
+	
+	xor bl,bl
+	mov bl, valorVariable[0]
+	cmp bl, 45
+	je  Lnegativa4 ;cambios recientes por si da error 
+	jmp Lpositiva4
+
+	Lpositiva4:
+		ModoVideo
+		pintarMargen 7
+		
+		;printTexto funcion
+		
+		alacuartaPositiva valor
+		jmp salir
+	Lnegativa4:
+		ModoVideo
+		pintarMargen 7
+		
+		alacuartaNegativa valor
+		jmp salir
+
+
 salir:
+pop di
+pop ax	
+endm
+
+printTexto macro funcion_asldjajsdkljasldzxc
+LOCAL mientras,fin
+push si
+push bx
+xor al,al
+xor di,di
+xor si,si
+xor bx,bx
+	mientras:
 	
+	mov al, funcion_asldjajsdkljasldzxc[bx]
+	cmp al,36d
+	je fin
+	add bx,1
+	jmp mientras
+	
+	fin:
+	
+pop bx
+pop si
+
 endm
 
 constantePositiva macro valor
@@ -934,6 +1386,8 @@ LOCAL graph1,graph3,ciclo,ciclo2
 mov dl, 2 ;color de la graficca
 mov di,32160 ; posicion inicial centro 
 add di,valor
+mov bx,di
+			;activar modo video 
 mov[di],dl
 add di,1
 add di,320
